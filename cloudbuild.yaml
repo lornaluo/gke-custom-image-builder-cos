@@ -51,7 +51,7 @@ steps:
          '-image-name=${_TARGET_IMAGE_NAME}-${_SHORT_BUILD_ID}',
          '-image-family=${_TARGET_IMAGE_FAMILY}',
          '-image-project=$PROJECT_ID',
-         '-labels=gke-golden-image=${_GOLDEN_BASE_IMAGE},gke-custom-version=${SHORT_SHA}']
+         '-labels=gke-golden-image=${_GOLDEN_BASE_IMAGE},gke-custom-version=${SHORT_SHA},build-id=${BUILD_ID}']
 
 # Set a timeout for the entire build process.
 timeout: '1800s'
