@@ -106,6 +106,5 @@ This template uses:
 
 ## Resources
 
-*   [TODO: update this when the link is available GKE Custom Image User Guide]
 *   [COS Customizer Documentation](https://cos.googlesource.com/cos/tools/+/refs/heads/master/src/cmd/cos_customizer/)
 *   [Google Cloud Build Documentation](https://cloud.google.com/build/docs)
