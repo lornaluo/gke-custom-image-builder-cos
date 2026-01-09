@@ -33,7 +33,7 @@ steps:
          '-gcs-workdir=cos-customizer-$BUILD_ID',
          '-build-context=.',
          '-network=${_NETWORK}',
-         '-subnetwork=${_SUBNETWORK}']
+         '-subnet=${_SUBNET}']
 
 # Step 2: Run the customization script.
 # This executes the 'setup.sh' script on the builder VM to apply desired modifications.

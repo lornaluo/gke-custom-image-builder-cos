@@ -89,8 +89,8 @@ variable "network" {
   default     = "default"
 }
 
-variable "subnetwork" {
-  description = "The subnetwork to use for the build. If not specified, the build uses the subnetwork in the same region as the build."
+variable "subnet" {
+  description = "The subnet to use for the build. If not specified, the build uses the subnet in the same region as the build."
   type        = string
   default     = ""
 }
