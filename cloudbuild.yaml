@@ -53,6 +53,7 @@ steps:
          '-network=',
          '-subnet=',
          '-image-family=${_TARGET_IMAGE_FAMILY}',
+         '-machine-type=t2a-standard-1',
          '-image-project=$PROJECT_ID',
          '-labels=gke-golden-image=${_GOLDEN_BASE_IMAGE},gke-custom-version=${SHORT_SHA},build-id=${BUILD_ID}']
 
