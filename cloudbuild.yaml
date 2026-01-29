@@ -12,52 +12,63 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This Cloud Build pipeline uses the cos-customizer tool to build a custom GKE COS image.
+# This Cloud Build pipeline uses the cos-customizer tool to build a custom GKE COS image
+# with a pre-installed NVIDIA GPU driver.
 
 options:
   # Send build logs to Cloud Logging.
   logging: CLOUD_LOGGING_ONLY
   dynamicSubstitutions: true
+  machineType: 'N1_HIGHCPU_32' # As used in the test example for build performance
 
 substitutions:
   _SHORT_BUILD_ID: ${BUILD_ID:0:8}
+  _GOLDEN_BASE_IMAGE: "gke-1341-gke3899001-cos-arm64-lm-125-19216-104-45-c-nvda" # Your chosen ARM64 base image
+  _GOLDEN_BASE_IMAGE_PROJECT: "gke-release-staging" # Project hosting the golden images (confirm if correct)
+  _GCS_BUCKET: "${PROJECT_ID}_cloudbuild" # Default bucket for cos-customizer
+  _ZONE: "us-central1-a" # Specify a zone for the builder VM
+  _TARGET_IMAGE_NAME: "your-custom-image-name" # Choose a name for your output image
+  _TARGET_IMAGE_FAMILY: "your-custom-image-family" # Choose a family name
+  _NVIDIA_DRIVER_FILENAME: "NVIDIA-Linux-aarch64-580.126.09.run"
+  _DRIVER_GCS_PATH: "gs://shuoyiluo-gke-preload/NVIDIA-Linux-aarch64-580.126.09.run"
+  _COS_CUSTOMIZER: 'gcr.io/cos-cloud/cos-customizer' # Using the public cos-customizer image
 
 steps:
 # Step 1: Initialize the image build process.
-# This step starts a temporary builder VM and prepares the environment for customization.
-- name: 'gcr.io/cos-cloud/cos-customizer'
+- name: '${_COS_CUSTOMIZER}'
   args: ['start-image-build',
          '-image-name=${_GOLDEN_BASE_IMAGE}',
          '-image-project=${_GOLDEN_BASE_IMAGE_PROJECT}',
          '-gcs-bucket=${_GCS_BUCKET}',
-         '-gcs-workdir=cos-customizer-$BUILD_ID',
-         '-build-context=.']
+         '-gcs-workdir=cos-customizer-$BUILD_ID']
 
-# Step 2: Run the customization script.
-# This executes the 'setup.sh' script on the builder VM to apply desired modifications.
-# You can update the scripts in `scripts/cos/` to perform your specific customizations
-# (e.g., installing packages, modifying kernel parameters, etc.).
-- name: 'gcr.io/cos-cloud/cos-customizer'
-  args: ['run-script',
-         '-script=scripts/cos/setup.sh']
+# Step 2: Copy the NVIDIA driver from your GCS bucket.
+- name: 'gcr.io/cloud-builders/gsutil'
+  args: ['cp', '${_DRIVER_GCS_PATH}', './${_NVIDIA_DRIVER_FILENAME}']
+  id: 'copy-driver'
 
-# Step 3: Finalize the image build.
-# This step stops the builder VM, creates the final custom COS image from its disk,
-# and applies the specified name, family, and labels.
-# The network and subnet will use the 'default' VPC network if none is provided.
-# The default machine-type will be using x86, if building arm images, please add flag 
-# of `-machine-type` to use arm64 machine type.
-- name: 'gcr.io/cos-cloud/cos-customizer'
+# Step 3: Install the GPU driver using cos-customizer.
+# This step depends on the driver file being copied in the previous step.
+- name: '${_COS_CUSTOMIZER}'
+  args: ['install-gpu',
+         '-version=./${_NVIDIA_DRIVER_FILENAME}',
+         '-gpu-type='] # Specify GPU type if needed, e.g., 'NVIDIA_H100'. Leave empty to auto-detect.
+  waitFor: ['copy-driver']
+
+# Step 4: Finalize the image build.
+- name: '${_COS_CUSTOMIZER}'
   args: ['finish-image-build',
          '-zone=${_ZONE}',
          '-project=$PROJECT_ID',
          '-image-name=${_TARGET_IMAGE_NAME}-${_SHORT_BUILD_ID}',
          '-network=',
          '-subnet=',
-         '-machine-type=',
+         '-machine-type=t2a-standard-1', # Use an ARM64 machine type for building the ARM64 image
          '-image-family=${_TARGET_IMAGE_FAMILY}',
          '-image-project=$PROJECT_ID',
-         '-labels=gke-golden-image=${_GOLDEN_BASE_IMAGE},gke-custom-version=${SHORT_SHA},build-id=${BUILD_ID}']
+         '-labels=gke-golden-image=${_GOLDEN_BASE_IMAGE},gke-custom-version=${SHORT_SHA},build-id=${BUILD_ID},nvidia-driver=${_NVIDIA_DRIVER_FILENAME}']
 
 # Set a timeout for the entire build process.
-timeout: '1800s'
+timeout: '7200s' # Increased timeout as in the test example
+
+
