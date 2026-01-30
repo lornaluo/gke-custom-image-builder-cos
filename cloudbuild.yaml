@@ -23,14 +23,14 @@ options:
 
 substitutions:
   _SHORT_BUILD_ID: ${BUILD_ID:0:8}
-  _GOLDEN_BASE_IMAGE: "gke-1341-gke3899001-cos-arm64-lm-125-19216-104-45-c-nvda" # Your chosen ARM64 base image
+  _GOLDEN_BASE_IMAGE: "gke-1341-gke3899001-cos-125-19216-104-45-c-nvda" # Your chosen x86 base image
   _GOLDEN_BASE_IMAGE_PROJECT: "gke-release-staging" # Project hosting the golden images (confirm if correct)
   _GCS_BUCKET: "${PROJECT_ID}_cloudbuild" # Default bucket for cos-customizer
   _ZONE: "us-central1-a" # Specify a zone for the builder VM
   _TARGET_IMAGE_NAME: "your-custom-image-name" # Choose a name for your output image
   _TARGET_IMAGE_FAMILY: "your-custom-image-family" # Choose a family name
-  _NVIDIA_DRIVER_FILENAME: "NVIDIA-Linux-aarch64-580.126.09.run"
-  _DRIVER_GCS_PATH: "gs://shuoyiluo-gke-preload/NVIDIA-Linux-aarch64-580.126.09.run"
+  _NVIDIA_DRIVER_FILENAME: "NVIDIA-Linux-x86_64-580.126.09.run"
+  _DRIVER_GCS_PATH: "gs://shuoyiluo-gke-preload/NVIDIA-Linux-x86_64-580.126.09.run"
   _COS_CUSTOMIZER: 'gcr.io/cos-cloud/cos-customizer:v20251204' # Using the public cos-customizer image
 
 steps:
@@ -63,7 +63,6 @@ steps:
          '-image-name=${_TARGET_IMAGE_NAME}-${_SHORT_BUILD_ID}',
          '-network=',
          '-subnet=',
-         '-machine-type=t2a-standard-1', # Use an ARM64 machine type for building the ARM64 image
          '-image-family=${_TARGET_IMAGE_FAMILY}',
          '-image-project=$PROJECT_ID',
          '-labels=gke-golden-image=${_GOLDEN_BASE_IMAGE},gke-custom-version=${SHORT_SHA},build-id=${BUILD_ID},nvidia-driver=${_NVIDIA_DRIVER_FILENAME}']
