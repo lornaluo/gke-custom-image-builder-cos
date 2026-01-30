@@ -31,7 +31,7 @@ substitutions:
   _TARGET_IMAGE_FAMILY: "your-custom-image-family" # Choose a family name
   _NVIDIA_DRIVER_FILENAME: "NVIDIA-Linux-aarch64-580.126.09.run"
   _DRIVER_GCS_PATH: "gs://shuoyiluo-gke-preload/NVIDIA-Linux-aarch64-580.126.09.run"
-  _COS_CUSTOMIZER: 'gcr.io/cos-cloud/cos-customizer' # Using the public cos-customizer image
+  _COS_CUSTOMIZER: 'gcr.io/cos-cloud/cos-customizer:v20251204' # Using the public cos-customizer image
 
 steps:
 # Step 1: Initialize the image build process.
