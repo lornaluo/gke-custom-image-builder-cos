@@ -53,6 +53,7 @@ steps:
   args: ['install-gpu',
          '-version=./${_NVIDIA_DRIVER_FILENAME}',
          '-gpu-type='] # Specify GPU type if needed, e.g., 'NVIDIA_H100'. Leave empty to auto-detect.
+  id: 'install-driver'
   waitFor: ['copy-driver']
 
 # Step 4: Finalize the image build.
@@ -66,8 +67,9 @@ steps:
          '-image-family=${_TARGET_IMAGE_FAMILY}',
          '-image-project=$PROJECT_ID',
          '-labels=gke-golden-image=${_GOLDEN_BASE_IMAGE},gke-custom-version=${SHORT_SHA},build-id=${BUILD_ID},nvidia-driver=${_NVIDIA_DRIVER_FILENAME}']
+  waitFor: ['install-driver']
 
 # Set a timeout for the entire build process.
-timeout: '7200s' # Increased timeout as in the test example
+timeout: '14400s' # Increased timeout as in the test example
 
 
