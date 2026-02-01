@@ -49,11 +49,12 @@ steps:
   id: 'copy-driver'
 
 # Step 2.5: Clean up existing NVIDIA state on the build VM
-- name: '${_COS_CUSTOMIZER}'
+- name: 'bash'
   args:
-  - 'run-script'
-  - '-script'
+  - '-c'
   - |
+    set -e
+    cat <<'EOF' > /workspace/clean.sh
     #!/bin/bash
     set -e
     echo "Attempting to clear out /var/lib/nvidia..."
@@ -63,6 +64,9 @@ steps:
     else
       echo "/var/lib/nvidia does not exist, skipping removal."
     fi
+    EOF
+    chmod +x /workspace/clean.sh
+    ${_COS_CUSTOMIZER} run-script -script /workspace/clean.sh
   id: 'clean-nvidia-lib'
   waitFor: ['start-image-build']
   
