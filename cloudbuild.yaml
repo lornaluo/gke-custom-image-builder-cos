@@ -48,26 +48,11 @@ steps:
   args: ['cp', '${_DRIVER_GCS_PATH}', './${_NVIDIA_DRIVER_FILENAME}']
   id: 'copy-driver'
 
-# Step 2.5: Clean up existing NVIDIA state on the build VM
-- name: 'bash'
-  args:
-  - '-c'
-  - |
-    set -e
-    cat <<'EOF' > /workspace/clean.sh
-    #!/bin/bash
-    set -e
-    echo "Attempting to clear out /var/lib/nvidia..."
-    if [ -d "/var/lib/nvidia" ]; then
-      rm -rf /var/lib/nvidia
-      echo "Successfully removed /var/lib/nvidia."
-    else
-      echo "/var/lib/nvidia does not exist, skipping removal."
-    fi
-    EOF
-    chmod +x /workspace/clean.sh
-    ${_COS_CUSTOMIZER} run-script -script /workspace/clean.sh
-  id: 'clean-nvidia-lib'
+# Step 2.5: Run the customization script from the repository.
+- name: '${_COS_CUSTOMIZER}'
+  args: ['run-script',
+         '-script=scripts/cos/setup.sh']
+  id: 'run-setup-script'
   waitFor: ['start-image-build']
   
 # Step 3: Install the GPU driver using cos-customizer.
@@ -76,7 +61,7 @@ steps:
          '-version=./${_NVIDIA_DRIVER_FILENAME}',
          '-gpu-type='] # Specify GPU type if needed, e.g., 'NVIDIA_H100'. Leave empty to auto-detect.
   id: 'install-driver'
-  waitFor: ['copy-driver', 'clean-nvidia-lib'] # Wait for both copy and clean
+  waitFor: ['copy-driver', 'run-setup-script'] # Wait for both copy and clean
 
 # Step 4: Finalize the image build.
 - name: '${_COS_CUSTOMIZER}'

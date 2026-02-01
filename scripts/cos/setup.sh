@@ -33,3 +33,15 @@ umount "${EFI_DIR}"
 rmdir "${EFI_DIR}"
 
 echo "Kernel command line updated successfully."
+
+
+# Added: Clean up any existing NVIDIA state
+echo "Attempting to clear out /var/lib/nvidia..."
+if [ -d "/var/lib/nvidia" ]; then
+  sudo rm -rf /var/lib/nvidia
+  echo "Successfully removed /var/lib/nvidia."
+else
+  echo "/var/lib/nvidia does not exist, skipping removal."
+fi
+
+echo "setup.sh execution complete."
