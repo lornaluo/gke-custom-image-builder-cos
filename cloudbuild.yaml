@@ -48,20 +48,24 @@ steps:
   args: ['cp', '${_DRIVER_GCS_PATH}', './${_NVIDIA_DRIVER_FILENAME}']
   id: 'copy-driver'
 
-# NEW STEP: Clean up existing NVIDIA state
+# Step 2.5: Clean up existing NVIDIA state on the build VM
 - name: '${_COS_CUSTOMIZER}'
-  args: ['run-script',
-         '-script=-',  # Read script from stdin
-         '''
-         #!/bin/bash
-         set -e
-         echo "Clearing out /var/lib/nvidia..."
-         rm -rf /var/lib/nvidia
-         echo "Done clearing /var/lib/nvidia."
-         ''']
+  args:
+  - 'run-script'
+  - '-script'
+  - |
+    #!/bin/bash
+    set -e
+    echo "Attempting to clear out /var/lib/nvidia..."
+    if [ -d "/var/lib/nvidia" ]; then
+      rm -rf /var/lib/nvidia
+      echo "Successfully removed /var/lib/nvidia."
+    else
+      echo "/var/lib/nvidia does not exist, skipping removal."
+    fi
   id: 'clean-nvidia-lib'
   waitFor: ['start-image-build']
-
+  
 # Step 3: Install the GPU driver using cos-customizer.
 - name: '${_COS_CUSTOMIZER}'
   args: ['install-gpu',
