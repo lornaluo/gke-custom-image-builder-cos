@@ -20,6 +20,7 @@ options:
   logging: CLOUD_LOGGING_ONLY
   dynamicSubstitutions: true
   machineType: 'N1_HIGHCPU_32' # As used in the test example for build performance
+  diskSizeGb: 200 # Example: Increase to 200GB 
 
 substitutions:
   _SHORT_BUILD_ID: ${BUILD_ID:0:8}
