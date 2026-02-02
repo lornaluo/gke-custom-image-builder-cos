@@ -20,7 +20,7 @@ options:
   logging: CLOUD_LOGGING_ONLY
   dynamicSubstitutions: true
   machineType: 'N1_HIGHCPU_32' # As used in the test example for build performance
-  diskSizeGb: 200 # Example: Increase to 200GB 
+  diskSizeGb: 100 # Example: Increase to 100GB 
 
 substitutions:
   _SHORT_BUILD_ID: ${BUILD_ID:0:8}
@@ -74,6 +74,7 @@ steps:
          '-network=',
          '-subnet=',
          '-machine-type=e2-standard-8',
+         '-disk-size-gb=100',
          '-image-family=${_TARGET_IMAGE_FAMILY}',
          '-image-project=$PROJECT_ID',
          '-labels=gke-golden-image=${_GOLDEN_BASE_IMAGE},gke-custom-version=${SHORT_SHA},build-id=${BUILD_ID}']
