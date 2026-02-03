@@ -24,7 +24,8 @@ options:
 
 substitutions:
   _SHORT_BUILD_ID: ${BUILD_ID:0:8}
-  _GOLDEN_BASE_IMAGE: "gke-1341-gke3899001-cos-125-19216-104-45-c-nvda" # Your chosen x86 base image
+  _GOLDEN_BASE_IMAGE: "gke-1343-gke1245000-cos-125-19216-104-45-c-nvda" # Your chosen x86 base image
+  # _GOLDEN_BASE_IMAGE: "gke-1341-gke3899001-cos-125-19216-104-45-c-nvda" # Your chosen x86 base image
   _GOLDEN_BASE_IMAGE_PROJECT: "gke-release-staging" # Project hosting the golden images (confirm if correct)
   _GCS_BUCKET: "${PROJECT_ID}_cloudbuild" # Default bucket for cos-customizer
   _ZONE: "us-central1-a" # Specify a zone for the builder VM
