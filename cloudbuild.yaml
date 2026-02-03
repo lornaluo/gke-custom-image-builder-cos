@@ -66,6 +66,15 @@ steps:
   id: 'install-driver'
   waitFor: ['copy-driver', 'run-setup-script'] # Wait for both copy and clean
 
+# ---- NEW STEP ----
+# Step 3.5: Persist driver files by copying them to /home/kubernetes/bin/nvidia.
+- name: '${_COS_CUSTOMIZER}'
+  args: ['run-script',
+          '-script=scripts/cos/copy_driver.sh'] 
+  id: 'run-copy-driver-script' 
+  waitFor: ['install-driver']
+# ---- END NEW STEP ----
+
 # Step 4: Finalize the image build.
 - name: '${_COS_CUSTOMIZER}'
   args: ['finish-image-build',
@@ -79,6 +88,6 @@ steps:
          '-image-family=${_TARGET_IMAGE_FAMILY}',
          '-image-project=$PROJECT_ID',
          '-labels=gke-golden-image=${_GOLDEN_BASE_IMAGE},gke-custom-version=${SHORT_SHA},build-id=${BUILD_ID}']
-  waitFor: ['install-driver']
+  waitFor: ['run-copy-driver-script']
 
 timeout: '14400s'
