@@ -31,9 +31,9 @@ substitutions:
   _ZONE: "us-central1-a" # Specify a zone for the builder VM
   _TARGET_IMAGE_NAME: "your-custom-image-name" # Choose a name for your output image
   _TARGET_IMAGE_FAMILY: "your-custom-image-family" # Choose a family name
-  _NVIDIA_DRIVER_FILENAME: "NVIDIA-Linux-x86_64-580.105.08.run"
-  _DRIVER_GCS_PATH: "gs://cos-nvidia-gpu-drivers/NVIDIA-Linux-x86_64-580.105.08.run"
-  #_DRIVER_GCS_PATH: "gs://shuoyiluo-gke-preload/NVIDIA-Linux-x86_64-580.105.08.run"
+  _NVIDIA_DRIVER_FILENAME: "NVIDIA-Linux-x86_64-580.126.09.run"
+  _DRIVER_GCS_PATH: "gs://cos-nvidia-gpu-drivers/NVIDIA-Linux-x86_64-580.126.09.run"
+  #_DRIVER_GCS_PATH: "gs://shuoyiluo-gke-preload/NVIDIA-Linux-x86_64-580.126.09.run"
   _COS_CUSTOMIZER: 'gcr.io/cos-cloud/cos-customizer:v20251204' # Using the public cos-customizer image
 
 steps:
