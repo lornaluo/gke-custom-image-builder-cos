@@ -1,0 +1,14 @@
+[Unit]
+Description=Pre-load GPU Drivers Early
+DefaultDependencies=no
+After=local-fs.target
+Before=kube-node-configuration.service kubelet.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# Load the driver using cos-extensions, skipping nvidia-persistenced
+ExecStart=/usr/bin/cos-extensions install gpu -- --version 580.126.09 --host-dir=/home/kubernetes/bin/nvidia
+
+[Install]
+WantedBy=multi-user.target
